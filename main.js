@@ -43,18 +43,54 @@ function aboutWindow() {
     // Validação (se existir a janela principal)
     if (mainwindow) {
         about = new BrowserWindow({
-            width: 320,
-            height: 280,
+            width: 300,
+            height: 230,
             autoHideMenuBar: true,
             resizable: false,
             minimizable: false,
             // estabelecer uma relçao hierarquica entre janelas
             parent: mainwindow,
             // criar uma janela modal (so retorna a principal quando encerrado)
-            modal: true
+            modal: true,
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js')
+            }
         })
     }
     about.loadFile('./src/views/sobre.html')
+
+    // Rcebimento da mensagem de renderização da tela sobre
+    ipcMain.on('about-exit', () => {
+        // validação (se existir a janela e ela não estiver destruida)
+        if (about && !about.isDestroyed()) {
+            about.close()
+        }
+    })
+}
+
+// Janela Notas
+function noteWindow() {
+    nativeTheme.themeSource = 'light'
+    // Obter a janela principal
+    const mainwindow = BrowserWindow.getFocusedWindow()
+    // Validação (se existir a janela principal)
+    if (mainwindow) {
+        note = new BrowserWindow({
+            width: 400,
+            height: 300,
+            autoHideMenuBar: true,
+            resizable: false,
+            minimizable: false,
+            // estabelecer uma relçao hierarquica entre janelas
+            parent: mainwindow,
+            // criar uma janela modal (so retorna a principal quando encerrado)
+            modal: true,
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js')
+            }
+        })
+    }
+    note.loadFile('./src/views/nota.html')
 }
 
 // inicialização da aplicação (assincronismo)
@@ -65,15 +101,17 @@ app.whenReady().then(() => {
     // No MongoDB e mais eficiente manter uma unica conexão aberta durante todo o tempo de vida do aplicativo
     // ipcmain.on (receber mensagem)
     // db-connect (rotulo da mensagem)
-    ipcMain.on('db-connect', async(event) => {
-        // a linha a baixo estabelecer a conexão com o banco de dados
-        await conectar()
-        // enviar a o renderizador uma mensagem para trocar a imagem do icone do status do banco de dados
-        setTimeout(() => {
-            // enviar ao renderizador a mensagem "Conectado"
-            // db-status (ipc - comunicação entre processos - proload.js)
-            event.reply('db-status', "conectado")
-        }, 500) //500ms = 0.5s
+    ipcMain.on('db-connect', async (event) => {
+        // a linha a baixo estabelecer a conexão com o banco de dados everifica se foi conectado com sucesso 
+        const conectado = await conectar()
+        if (conectado) {
+            // enviar a o renderizador uma mensagem para trocar a imagem do icone do status do banco de dados
+            setTimeout(() => {
+                // enviar ao renderizador a mensagem "Conectado"
+                // db-status (ipc - comunicação entre processos - proload.js)
+                event.reply('db-status', "conectado")
+            }, 500) //500ms = 0.5s
+        }
     })
 
     // so ativar a janela principal se nenhuma outra estiver ativa
@@ -93,7 +131,7 @@ app.on('window-all-closed', () => {
 })
 
 // IMPORTANTE encerrar a conexão com o banco de dados quando a aplicação for encerrada
-app.on('before-quit', async() => {
+app.on('before-quit', async () => {
     await desconectar()
 })
 
@@ -108,6 +146,7 @@ const template = [
             {
                 label: 'Criar nota',
                 accelerator: 'Ctrl+N',
+                click: () => noteWindow()
             },
             {
                 type: 'separator'

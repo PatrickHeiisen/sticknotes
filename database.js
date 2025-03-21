@@ -23,8 +23,10 @@ const conectar = async () => {
             await mongoose.connect(url)
             conectado = true
             console.log("MondoDB Conectado")
+            return true // verificação para o main
         } catch (error) {
             console.log(error)
+            return false
         }
     }
 }
