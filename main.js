@@ -218,6 +218,9 @@ ipcMain.on('create-note', async (event, stickyNote) => {
     })
     // Salvar a nota no banco de dados (Passo 3)
     newNote.save()  
+    // Enviar ao renderizador um pedido para limpar os campos e setar o formulario com os padroes originais
+    // usando o preload.js
+    event.reply('reset-form')
 })
 
 // == Fim - CRUD Create ============================================
