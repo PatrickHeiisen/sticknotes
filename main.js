@@ -226,6 +226,29 @@ ipcMain.on('create-note', async (event, stickyNote) => {
         console.log(error)
     }
 })
+// == Fim - CRUD Create ============================================
+//==================================================================
+
+
+//==================================================================
+// == CRUD Create ==================================================
+
+// Passo 2: Receber do renderer o pedido para listar as notas e fazer as buscas
+ipcMain.on('list-notes', async (event) => {
+    //console.log("Teste Ipc [list-notes]")
+    try {
+        // Passo 3: Obter do banco a listagem de notas cadastradas
+        const notes = await noteModel.find()
+        console.log(notes) // teste passo 3
+        // Passo 4: Enviar ao renderer a listagem das notas
+        // obs: IPC (string) | banco (json) e necessario uma conversão
+        // event.reply resposta a solicitação (especifica do solicitante)
+        event.reply('render-notes', JSON.stringify(notes))
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 
 // == Fim - CRUD Create ============================================
 //==================================================================
