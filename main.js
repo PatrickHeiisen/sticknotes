@@ -18,8 +18,8 @@ const createWindow = () => {
     // definindo o tema da janela claro ou escuro
     nativeTheme.themeSource = 'light'
     win = new BrowserWindow({
-        width: 1010,
-        height: 720,
+        width: 1080,
+        height: 900,
         //frame: false,
         //resizable: false,
         //minimizable: false,
@@ -113,7 +113,7 @@ app.whenReady().then(() => {
                 // enviar ao renderizador a mensagem "Conectado"
                 // db-status (ipc - comunicação entre processos - proload.js)
                 event.reply('db-status', "conectado")
-            }, 500) //500ms = 0.5s
+            }, 200) //500ms = 0.5s
         }
     })
 
@@ -249,6 +249,17 @@ ipcMain.on('list-notes', async (event) => {
     }
 })
 
-
+// atualização das notas da janela principal
+ipcMain.on('update-list', () => {
+    // validação (se a janela principal existir e não tiver sido encerrada)
+    if (win && !win.isDestroyed()){
+        // enviar ao renderer.js um pedido para recarregar a pagina
+        win.webContents.send('main-reload')
+        // enviar novamente um pedido para troca do icone
+        setTimeout(() => {
+            win.webContents.send('db-status', "conectado")
+        }, 200) // para garantir que o renderer esteja pronto
+    }
+})
 // == Fim - CRUD Create ============================================
 //==================================================================
