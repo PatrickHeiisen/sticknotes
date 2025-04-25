@@ -1,7 +1,8 @@
 console.log("Processo Principal")
 
 // importação dos recursos do frame work
-const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron/main')
+// Dialog caixa de mensagem
+const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain, dialog } = require('electron/main')
 
 // Ativação do preload.js (importação do path)
 const path = require('node:path')
@@ -181,7 +182,7 @@ const template = [
             },
             {
                 label: 'Recarregar',
-                role: 'reload'
+                click: () => updateList()
             },
             {
                 label: 'DevTools',
@@ -229,10 +230,8 @@ ipcMain.on('create-note', async (event, stickyNote) => {
 // == Fim - CRUD Create ============================================
 //==================================================================
 
-
 //==================================================================
 // == CRUD Create ==================================================
-
 // Passo 2: Receber do renderer o pedido para listar as notas e fazer as buscas
 ipcMain.on('list-notes', async (event) => {
     //console.log("Teste Ipc [list-notes]")
@@ -248,11 +247,17 @@ ipcMain.on('list-notes', async (event) => {
         console.log(error)
     }
 })
+// == Fim - CRUD Create ============================================
+//==================================================================
+// Atualização das listas de nota ==================================
 
 // atualização das notas da janela principal
 ipcMain.on('update-list', () => {
+    updateList()
+})
+function updateList(){
     // validação (se a janela principal existir e não tiver sido encerrada)
-    if (win && !win.isDestroyed()){
+    if (win && !win.isDestroyed()) {
         // enviar ao renderer.js um pedido para recarregar a pagina
         win.webContents.send('main-reload')
         // enviar novamente um pedido para troca do icone
@@ -260,6 +265,27 @@ ipcMain.on('update-list', () => {
             win.webContents.send('db-status', "conectado")
         }, 200) // para garantir que o renderer esteja pronto
     }
+}
+// Fim da lista de notas ==========================================
+//******************************************************************
+// == CRUD Delete ==================================================
+ipcMain.on('delete-note', async (event, id) => {
+    console.log(id) // Teste do passo 2 (importante)
+    // Excluir o registro do banco (passo 3) Importante (confirmar antes da exclusão)
+    const { response } = await dialog.showMessageBox(win, {
+        type: 'warning',
+        title: "Atenção!",
+        message: "Tem certeza que deseja excluir essa nota?\nEsta ação não poderar ser desfeita.",
+        buttons: ['Cancelar', 'Excluir'] // [0,1]
+    })
+    if (response === 1) {
+        try {
+            const deleteNote = await noteModel.findByIdAndDelete(id)
+            win.webContents.send('main-reload')
+        } catch (error) {
+            console.log(error)
+        }
+    }
 })
-// == Fim - CRUD Create ============================================
+// == Fim - CRUD Delete ============================================
 //==================================================================
