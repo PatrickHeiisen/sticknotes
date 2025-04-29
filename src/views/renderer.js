@@ -56,16 +56,16 @@ api.renderNotes((event, notes) => {
     arrayNotes = renderNotes // Atribuir ao vetor o JSON recebido
     // Uso do laço forEach para percorrer o vetor e extrair os dados
     arrayNotes.forEach((n) => {
-      // Adição de tags <li> no documento index
-      list.innerHTML += `
-        <br>
-        <li>
+        // Adição de tags <li> no documento index
+        // var (--${n.cor}) aplicar a cor definida nas variaveis CSS
+        list.innerHTML += `
+        <li class = "card" style = "background-color: var(--${n.cor});">
             <p onclick = "deleteNote('${n._id}')" id ="x">X</p>
-            <p>${n._id}</p>
+            <p id = "code">${n._id}</p>
             <p>${n.texto}</p>
-            <p>${n.cor}</p>
+            <p id = "color">${n.cor}</p>
         </li>
-      ` 
+      `
     })
 })
 //================================================================================
@@ -79,7 +79,7 @@ api.mainReload((args) => {
 //********************************************************************************
 //================================================================================
 //== CRUD Delete ==================================================================
-function deleteNote(id){
+function deleteNote(id) {
     console.log(id) // Passo 1: Receber o id da nota a ser excluida
     api.deleteNote(id) // Passo 2: enviar o id da nota ao main
 }
