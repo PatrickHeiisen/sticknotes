@@ -3,7 +3,7 @@
  */
 
 // enviar uma mensagem para o processo principal fechar a janela sobre
-function fechar(){
+function exit(){
     // Executar a função aboutExit() vinculada ao preload atraves da api do electron
     api.aboutExit()
 }

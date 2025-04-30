@@ -14,18 +14,18 @@ let arrayNotes = []
 const list = document.getElementById('listNotes')
 
 // inserção da data no rodapé
-function obterData() {
-    const data = new Date()
+function getDate() {
+    const date = new Date()
     const options = {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'
     }
-    return data.toLocaleDateString('pt-BR', options)
+    return date.toLocaleDateString('pt-BR', options)
 }
 
-document.getElementById('dataAtual').innerHTML = obterData()
+document.getElementById('currentDate').innerHTML = getDate()
 
 // Troca do icone do banco de dados (Status da conexão)
 // uso da api do preload.js
@@ -34,9 +34,9 @@ api.dbStatus((event, message) => {
     console.log(message)
 
     if (message === "conectado") {
-        document.getElementById('iconeDB').src = "../public/img/dbon.png"
+        document.getElementById('iconDB').src = "../public/img/dbon.png"
     } else {
-        document.getElementById('iconeDB').src = "../public/img/dboff.png"
+        document.getElementById('iconDB').src = "../public/img/dboff.png"
     }
 })
 
@@ -70,14 +70,17 @@ api.renderNotes((event, notes) => {
 })
 //================================================================================
 //== FIM - CRUID READ ============================================================
+
 //********************************************************************************
+
 // Atualização das Notas =========================================================
 api.mainReload((args) => {
     location.reload()
 })
 // Fim - Atualização das Notas ===================================================
+
 //********************************************************************************
-//================================================================================
+
 //== CRUD Delete ==================================================================
 function deleteNote(id) {
     console.log(id) // Passo 1: Receber o id da nota a ser excluida
