@@ -8,9 +8,9 @@ Projeto de notas autoadesivas estilo post-it, usando um framework Electron e o b
 ## Autor
 Patrick G
 
-## Pré-requisitos de instalação
--- Windows 10 ou superior
--- Ter o banco de dados MongoDB instalado
+## Pré-requisitos de instalação:
+- Windows 10 ou superior
+- Ter o banco de dados MongoDB instalado
 
 ### Instalação do MongoDB:
 Acesse o site oficial:
